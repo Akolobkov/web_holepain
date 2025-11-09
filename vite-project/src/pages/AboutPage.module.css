@@ -1,0 +1,350 @@
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    width: 100vw; /* ← добавить это */
+    margin: 0; /* ← добавить это */
+    padding: 0; /* ← добавить это */
+}
+
+.main {
+    flex: 1;
+    background-color: #f8f9fa;
+    width: 100%; /* ← изменить на 100% */
+    padding: 20px 0;
+    margin: 0; /* ← добавить */
+}
+
+.content {
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.hero {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.mainTitle {
+    font-size: 2.5rem;
+    color: #666;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.intro {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    margin-bottom: 30px;
+    width: 70%;
+    margin-left: auto;    /* Добавьте это */
+    margin-right: auto;   /* И это */
+}
+
+.slogan {
+    flex: 1;
+    text-align: center;
+    width: 70%;
+}
+
+.slogan h2 {
+    font-size: 1.8rem;
+    color: #ff8000;
+    margin-bottom: 10px;
+}
+
+.slogan p {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.introText {
+    flex: 2;
+    text-align: left;
+}
+
+.introText p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    color: #555;
+}
+
+.sectionsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.companyInfo {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.companyInfo h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.featuresGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.featureCard {
+    text-align: center;
+    padding: 20px;
+}
+
+.featureIcon {
+    background: #ff8000;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+
+.featureCard h3 {
+    margin: 15px 0;
+    font-size: 1.3rem;
+    color: #333;
+}
+
+.featureCard p {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #666;
+}
+
+.wholesale {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.wholesale h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.servicesList {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.serviceItem {
+    display: flex;
+    gap: 25px;
+    align-items: flex-start;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.serviceImage {
+    flex-shrink: 0;
+}
+
+.serviceImage img {
+    width: 200px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.serviceContent {
+    flex: 1;
+}
+
+.serviceContent h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1.3rem;
+}
+
+.serviceContent p {
+    line-height: 1.6;
+    color: #555;
+    margin: 0;
+}
+
+.team {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 40px;
+}
+
+.team h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.teamNote {
+    text-align: center;
+    font-style: italic;
+    color: #666;
+    margin-bottom: 30px;
+    padding: 0 20px;
+}
+
+.teamGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.teamMember {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.memberPhoto {
+    flex-shrink: 0;
+}
+
+.memberPhoto img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.memberInfo {
+    flex: 1;
+}
+
+.memberInfo h3 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.memberInfo p {
+    line-height: 1.5;
+    color: #555;
+    margin: 0;
+}
+
+.certification {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.certification h2 {
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.certificates {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.certificateLink {
+    display: inline-block;
+    padding: 15px 30px;
+    background: #ff8000;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.certificateLink:hover {
+    background: #e67300;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .intro {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .slogan {
+        text-align: center;
+    }
+    
+    .featuresGrid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .serviceItem {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .serviceImage img {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .teamGrid {
+        grid-template-columns: 1fr;
+    }
+    
+    .teamMember {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .certificates {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .certificateLink {
+        width: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mainTitle {
+        font-size: 2rem;
+    }
+    
+    .content {
+        padding: 0 15px;
+    }
+    
+    .companyInfo,
+    .wholesale,
+    .team,
+    .certification {
+        padding: 20px 15px;
+    }
+}

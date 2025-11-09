@@ -1,0 +1,42 @@
+.header{
+    background-color: white;
+
+    border-bottom: 3px solid black;
+
+    min-height: 7.8vh;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: start;
+
+
+}
+
+h2{
+     margin-left: 10px;
+     color: #000;
+}
+
+.block1{
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+}
+
+.block2{
+    display: flex;
+    flex-direction: row;
+    align-items: end;
+}
+
+.button_ {
+    border: none;
+    background-color: white;
+    cursor: pointer;
+}
+.button_:hover {
+    background-color: white;
+}

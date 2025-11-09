@@ -1,0 +1,272 @@
+/* ContactsPage.module.css */
+
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: 99vw;
+  margin: 0;
+  padding: 0;
+}
+
+.main {
+    flex: 1;
+    background-color: #f8f9fa;
+    width: 100%;
+}
+
+/* Hero section - full width */
+.hero {
+    max-width: 70%;
+    margin: 0 auto 3rem auto;
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+.mainTitle {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+}
+
+
+/* Content container with max width */
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sectionsContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .sectionsContainer {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  
+  .hero {
+    padding: 40px 15px;
+  }
+  
+  .mainTitle {
+    font-size: 2rem;
+  }
+}
+
+/* Card Styles */
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e1e5e9;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+}
+
+.card h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 25px;
+  color: #2d3748;
+  border-bottom: 2px solid #ff8000;
+  padding-bottom: 10px;
+}
+
+/* Info Section */
+.info h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #4a5568;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  width: 100%;
+}
+
+.item p {
+  margin: 0;
+  line-height: 1.6;
+  color: #ff8000;
+}
+
+.item a {
+  color: #ff8000;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.item a:hover {
+  color: #ff8000;
+  text-decoration: underline;
+}
+
+/* Map Styles */
+.mapContainer {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.mapContainer iframe {
+  width: 100%;
+  height: 300px;
+  display: block;
+}
+
+.mapNote {
+  margin-top: 10px !important;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Form Styles */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.formRow {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .formRow {
+    flex-direction: column;
+    gap: 15px;
+  }
+}
+
+.formGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.formGroup.fullWidth {
+  flex: 0 0 100%;
+}
+
+.formGroup label {
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #4a5568;
+  font-size: 0.9rem;
+}
+
+.formGroup input,
+.formGroup textarea {
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background-color: #f7fafc;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+  outline: none;
+  color: #ff8000;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.formGroup textarea {
+  resize: vertical;
+  min-height: 120px;
+  font-family: inherit;
+}
+
+/* Submit Button */
+.submitButton {
+  background: linear-gradient(135deg, #ff8000);
+  color: white;
+  border: none;
+  padding: 14px 30px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.submitButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.3);
+}
+
+.submitButton:active {
+  transform: translateY(0);
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .hero {
+    padding: 30px 15px;
+  }
+  
+  .mainTitle {
+    font-size: 1.75rem;
+  }
+  
+  .card {
+    padding: 20px;
+  }
+  
+  .card h2 {
+    font-size: 1.3rem;
+  }
+  
+  .content {
+    padding: 20px 15px;
+  }
+}
