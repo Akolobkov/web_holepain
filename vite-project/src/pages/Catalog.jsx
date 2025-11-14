@@ -1,82 +1,68 @@
+// Catalog.jsx
 import { useNavigate } from 'react-router-dom';
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 import Row from './Row.jsx';
+import { useProducts } from '../hooks/cataloghook.js';
 import styles from './Catalog.module.css';
-import Kuhgar from '../img/Kuhgar.webp'
-import Modkuh from '../img/Modkuh.webp'
-import kuhmod from '../img/kuhmod.webp'
-import stol from '../img/stol.jpg'
-import ModSpal from '../img/ModSpal.webp'
-import krovati from '../img/krovati.webp'
-import gost from '../img/gost.webp'
-const mockProducts = {
-    kitchens: [
-        {
-            id: 1,
-            title: "Кухонный гарнитур 'Милена'",
-            description: "Цвет материала фасада: белый арт, Цвет материала корпуса: белый",
-            price: 45900,
-            image: Kuhgar,
-        },
-        {
-            id: 2,
-            title: "Модульная кухня 'Олива Глянец'",
-            description: "Цвет материала фасада: олива, Цвет материала корпуса: белый",
-            price: 128900,
-            image: Modkuh,
-        },
-        {
-            id: 3,
-            title: "Шкаф нижний 'Под яды'",
-            description: "МаоМао бы одобрила, Цвет материала фасада: дерево",
-            price: 15700,
-            image: kuhmod
-        },
-        {
-            id: 4,
-            title: "Столешница 2,9м",
-            description: "Цвет материала корпуса: семолина",
-            price: 100,
-            image: stol,
-        }
-    ],
-    bedrooms: [
-        {
-            id: 5,
-            title: "Модульная спальня 'Венеция'",
-            description: "Цвет материала фасада: жемчуг, Цвет материала корпуса: белый",
-            price: 223400,
-            image: ModSpal,
-        },
-        {
-            id: 6,
-            title: "Кровать Ронда КР-140 с основанием ЛДСП",
-            description: "Цвет материала фасада: белое дерево, Цвет материала корпуса: белое дерево",
-            price: 10900,
-            image: krovati
-        }
-    ],
-    gostinniye: [
-        {
-            id: 7,
-            title: "Комплект гостиной Николь",
-            description: "Цвет материала фасада: софт айвори, Цвет материала корпуса: дуб крафт серый",
-            price: 129000,
-            image: gost,
-        }
-    ]
-};
 
 function Catalog() {
     const navigate = useNavigate();
+    const { products, loading, error } = useProducts();
+
     const handleProductDetails = (product) => {
         navigate(`/product/${product.id}`);
     };
 
     const handleAddToCart = (product) => {
+        const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+        const existingItem = cartItems.find(item => item.id === product.id);
+        
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            cartItems.push({
+                ...product,
+                quantity: 1
+            });
+        }
+        
+        localStorage.setItem('cart', JSON.stringify(cartItems));
         alert(`Товар "${product.title}" добавлен в корзину!`);
     };
+
+    if (loading) {
+        return (
+            <div className={styles.container}>
+                <Header />
+                <div className={styles.loading}>
+                    <div className={styles.spinner}></div>
+                    <p>Загрузка товаров с сервера...</p>
+                </div>
+                <Footer />
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className={styles.container}>
+                <Header />
+                <div className={styles.error}>
+                    <h3>Ошибка загрузки данных</h3>
+                    <p>{error}</p>
+                    <p>Проверьте, запущен ли сервер на порту 300</p>
+                    <button 
+                        onClick={() => window.location.reload()}
+                        className={styles.retryButton}
+                    >
+                        Попробовать снова
+                    </button>
+                </div>
+                <Footer />
+            </div>
+        );
+    }
 
     return (
         <div className={styles.container}>
@@ -92,27 +78,40 @@ function Catalog() {
                     </section>
 
                     <div className={styles.catalogGrid}>
-                        <Row
-                            title="Кухни"
-                            products={mockProducts.kitchens}
-                            onProductDetails={handleProductDetails}
-                            onAddToCart={handleAddToCart}
-                        />
+                        {products.kitchens.length > 0 && (
+                            <Row
+                                title="Кухни"
+                                products={products.kitchens}
+                                onProductDetails={handleProductDetails}
+                                onAddToCart={handleAddToCart}
+                            />
+                        )}
                         
-                        <Row
-                            title="Спальни"
-                            products={mockProducts.bedrooms}
-                            onProductDetails={handleProductDetails}
-                            onAddToCart={handleAddToCart}
-                        />
+                        {products.bedrooms.length > 0 && (
+                            <Row
+                                title="Спальни"
+                                products={products.bedrooms}
+                                onProductDetails={handleProductDetails}
+                                onAddToCart={handleAddToCart}
+                            />
+                        )}
                         
-                        <Row
-                            title="Гостиные"
-                            products={mockProducts.gostinniye}
-                            onProductDetails={handleProductDetails}
-                            onAddToCart={handleAddToCart}
-                        />
+                        {products.gostinniye.length > 0 && (
+                            <Row
+                                title="Гостиные"
+                                products={products.gostinniye}
+                                onProductDetails={handleProductDetails}
+                                onAddToCart={handleAddToCart}
+                            />
+                        )}
                     </div>
+
+                    {!products.kitchens.length && !products.bedrooms.length && !products.gostinniye.length && (
+                        <div className={styles.empty}>
+                            <h3>Товары не найдены</h3>
+                            <p>В данный момент в каталоге нет доступных товаров.</p>
+                        </div>
+                    )}
                 </div>
             </main>
 
