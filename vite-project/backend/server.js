@@ -100,8 +100,6 @@ app.get('/api/products/:id', async (req, res) => {
     }
 });
 
-// Get product details with full information (для страницы товара)
-// Get product details with full information (для страницы товара)
 app.get('/api/product-details/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -117,7 +115,6 @@ app.get('/api/product-details/:id', async (req, res) => {
                 p.image_mime_type,
                 p.category_id,
                 pd.full_description,
-                pd.images,
                 pd.features,
                 pd.specifications,
                 pd.in_stock,
@@ -143,7 +140,6 @@ app.get('/api/product-details/:id', async (req, res) => {
             imageUrl = `data:${product.image_mime_type};base64,${base64Image}`;
         }
         
-        // Обрабатываем JSON поля (если они приходят как строки)
         const images = typeof product.images === 'string' 
             ? JSON.parse(product.images) 
             : (product.images || []);

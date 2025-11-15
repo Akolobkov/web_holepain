@@ -9,12 +9,10 @@ const pool = new Pool({
     password: 'postgres',
 });
 
-// Данные из вашего React компонента
 const productDetailsData = [
     {
         product_id: 1,
         full_description: "Стильный кухонный гарнитур 'Милена' выполнен в классическом белом цвете. Идеальное решение для современной кухни. Качественные материалы и продуманная эргономика делают эту кухню практичной и удобной в использовании.",
-        images: ['Kuhgar.webp', 'Kuhgar.webp', 'Kuhgar.webp'],
         features: [
             "Фасад: белый арт",
             "Корпус: белый",
@@ -37,7 +35,6 @@ const productDetailsData = [
     {
         product_id: 2,
         full_description: "Современная модульная кухня в стиле глянец с элегантным оливковым цветом. Модульная система позволяет адаптировать кухню под любое помещение.",
-        images: ['Modkuh.webp', 'Modkuh.webp', 'Modkuh.webp'],
         features: [
             "Фасад: олива глянец",
             "Корпус: белый",
@@ -58,7 +55,7 @@ const productDetailsData = [
     {
         product_id: 3,
         full_description: "Практичный нижний шкаф для кухни. Идеальное решение для хранения кухонной утвари и продуктов. Качественная фурнитура обеспечивает долгий срок службы.",
-        images: ['kuhmod.webp', 'kuhmod.webp', 'kuhmod.webp'],
+        
         features: [
             "Фасад: дерево",
             "Вместительный",
@@ -78,7 +75,7 @@ const productDetailsData = [
     {
         product_id: 4,
         full_description: "Прочная и долговечная столешница длиной 2,9 метра. Устойчива к влаге и механическим повреждениям. Идеально подходит для кухонных гарнитуров.",
-        images: ['stol.jpg', 'stol.jpg', 'stol.jpg'],
+        
         features: [
             "Длина: 2,9 м",
             "Цвет: семолина",
@@ -98,7 +95,7 @@ const productDetailsData = [
     {
         product_id: 5,
         full_description: "Элегантная модульная спальня в стиле 'Венеция'. Нежный жемчужный цвет создает атмосферу уюта и гармонии в спальне.",
-        images: ['ModSpal.webp', 'ModSpal.webp', 'ModSpal.webp'],
+        
         features: [
             "Фасад: жемчуг",
             "Корпус: белый",
@@ -119,7 +116,7 @@ const productDetailsData = [
     {
         product_id: 6,
         full_description: "Компактная и удобная кровать Ронда КР-140. Ортопедическое основание обеспечивает комфортный сон. Стильный дизайн в цвете белое дерево.",
-        images: ['krovati.webp', 'krovati.webp', 'krovati.webp'],
+        
         features: [
             "Размер: 140 см",
             "Цвет: белое дерево",
@@ -137,9 +134,9 @@ const productDetailsData = [
         warranty: "18 месяцев"
     },
     {
-        product_id: 7,
+        product_id: 8,
         full_description: "Роскошный комплект гостиной 'Николь' сочетает в себе нежный цвет софт айвори и благородный дуб крафт серый. Идеальное решение для просторной гостиной.",
-        images: ['gost.webp', 'gost.webp', 'gost.webp'],
+        
         features: [
             "Фасад: софт айвори",
             "Корпус: дуб крафт серый",
@@ -156,7 +153,28 @@ const productDetailsData = [
         in_stock: true,
         fast_delivery: true,
         warranty: "24 месяца"
+    },
+    {
+        product_id: 7,
+        full_description: "Основание для кровати Ронда КР-160* из ЛДСП или ДСП. *Основание для кровати приобретается отдельно. ВНИМАНИЕ! Цвет основания МИКС (без возможности выбора конкретного цвета) и может отличаться от цвета, представленного на сайте.",
+        
+        features: [
+            "Ширина 1595 мм",
+            "Высота: 16 мм",
+            "Глубина: 1600 мм",
+            "Количество упаковок: 1"
+        ],
+        specifications: [
+            { name: "Ширина", value: "1595 мм" },
+            { name: "Высота", value: "16 мм" },
+            { name: "Глубина", value: "1600 мм" },
+            { name: "Материал", value: "ЛДСП" }
+        ],
+        in_stock: true,
+        fast_delivery: true,
+        warranty: "24 месяца"
     }
+    
 ];
 
 async function migrateProductDetails() {
@@ -180,13 +198,12 @@ async function migrateProductDetails() {
         for (const productDetail of productDetailsData) {
             await client.query(
                 `INSERT INTO product_details (
-                    product_id, full_description, images, features, 
+                    product_id, full_description, features, 
                     specifications, in_stock, fast_delivery, warranty
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
                 [
                     productDetail.product_id,
                     productDetail.full_description,
-                    JSON.stringify(productDetail.images),
                     JSON.stringify(productDetail.features),
                     JSON.stringify(productDetail.specifications),
                     productDetail.in_stock,

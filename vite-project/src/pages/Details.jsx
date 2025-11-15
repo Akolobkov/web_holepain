@@ -11,16 +11,31 @@ function Details() {
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
 
-    console.log('🔍 RENDER Details:', { product, loading, error });
-
     const handleAddToCart = () => {
         if (!product) return;
-        alert(`Товар "${product.title}" добавлен в корзину!`);
+        
+        const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
+        const existingItem = cartItems.find(item => item.id === product.id);
+        
+        if (existingItem) {
+            existingItem.quantity += quantity;
+        } else {
+            cartItems.push({
+                id: product.id,
+                title: product.title,
+                price: product.price,
+                image: product.image,
+                quantity: quantity
+            });
+        }
+        
+        localStorage.setItem('cart', JSON.stringify(cartItems));
+        alert(`Товар "${product.title}" (${quantity} шт.) добавлен в корзину!`);
     };
 
     const handleBuyNow = () => {
-        if (!product) return;
-        alert(`Переход к оформлению: ${product.title}`);
+        handleAddToCart();
+        alert(`Переход к оформлению заказа: ${product.title} (${quantity} шт.)`);
     };
 
     const handleQuantityChange = (value) => {
@@ -34,8 +49,9 @@ function Details() {
                 <Header />
                 <main className={styles.main}>
                     <div className={styles.content}>
-                        <div style={{ textAlign: 'center', padding: '60px 0' }}>
-                            <h2>Загрузка товара...</h2>
+                        <div className={styles.loading}>
+                            <div className={styles.spinner}></div>
+                            <p>Загрузка информации о товаре...</p>
                         </div>
                     </div>
                 </main>
@@ -50,10 +66,12 @@ function Details() {
                 <Header />
                 <main className={styles.main}>
                     <div className={styles.content}>
-                        <div style={{ textAlign: 'center', padding: '60px 0' }}>
-                            <h2>Товар не найден</h2>
+                        <div className={styles.error}>
+                            <h3>Товар не найден</h3>
                             <p>{error}</p>
-                            <Link to="/catalog">Вернуться в каталог</Link>
+                            <Link to="/catalog" className={styles.breadcrumbLink}>
+                                Вернуться в каталог
+                            </Link>
                         </div>
                     </div>
                 </main>
@@ -62,136 +80,145 @@ function Details() {
         );
     }
 
-    // ПРОСТАЯ РАБОЧАЯ ВЕРСИЯ
     return (
-        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <div className={styles.container}>
             <Header />
             
-            <main style={{ flex: 1, padding: '20px' }}>
-                <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+            <main className={styles.main}>
+                <div className={styles.content}>
                     {/* Хлебные крошки */}
-                    <nav style={{ marginBottom: '20px' }}>
-                        <Link to="/" style={{ color: '#007bff' }}>Главная</Link>
-                        <span style={{ margin: '0 10px' }}>/</span>
-                        <Link to="/catalog" style={{ color: '#007bff' }}>Каталог</Link>
-                        <span style={{ margin: '0 10px' }}>/</span>
-                        <span>{product.title}</span>
+                    <nav className={styles.breadcrumbs}>
+                        <Link to="/" className={styles.breadcrumbLink}>Главная</Link>
+                        <span className={styles.breadcrumbSeparator}>/</span>
+                        <Link to="/catalog" className={styles.breadcrumbLink}>Каталог</Link>
+                        <span className={styles.breadcrumbSeparator}>/</span>
+                        <span className={styles.currentPage}>{product.title}</span>
                     </nav>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px' }}>
-                        {/* Изображение */}
-                        <div>
-                            <img 
-                                src={product.image || 'https://via.placeholder.com/500x400'} 
-                                alt={product.title}
-                                style={{ width: '100%', borderRadius: '8px' }}
-                            />
+                    {/* Основная информация о товаре */}
+                    <div className={styles.productDetails}>
+                        <div className={styles.mainSection}>
+                            {/* Галерея изображений */}
+                            <div className={styles.gallery}>
+                                <div className={styles.mainImage}>
+                                    <img 
+                                        src={product.image || 'https://via.placeholder.com/600x400?text=Нет+изображения'} 
+                                        alt={product.title}
+                                        className={styles.productImage}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Информация о товаре */}
+                            <div className={styles.productInfo}>
+                                <div className={styles.productHeader}>
+                                    <h1 className={styles.productTitle}>{product.title}</h1>
+                                    <div className={styles.productSku}>Артикул: {product.id}</div>
+                                </div>
+
+                                {/* Цена */}
+                                <div className={styles.priceSection}>
+                                    <div className={styles.currentPrice}>
+                                        {product.price.toLocaleString('ru-RU')} ₽
+                                    </div>
+                                </div>
+
+                                {/* Статус и доставка */}
+                                <div className={styles.statusSection}>
+                                    <div className={`${styles.stockStatus} ${product.inStock ? styles.inStock : styles.outOfStock}`}>
+                                        {product.inStock ? '✓ В наличии' : '✗ Нет в наличии'}
+                                    </div>
+                                    <div className={styles.deliveryInfo}>
+                                        {product.fastDelivery && <span>🚚 Быстрая доставка</span>}
+                                        <span>Гарантия: {product.warranty}</span>
+                                    </div>
+                                </div>
+
+                                {/* Кнопки действий */}
+                                <div className={styles.actionsSection}>
+                                    <div className={styles.quantitySelector}>
+                                        <span className={styles.quantityLabel}>Количество:</span>
+                                        <div className={styles.quantityControls}>
+                                            <button 
+                                                className={styles.quantityButton}
+                                                onClick={() => handleQuantityChange(quantity - 1)}
+                                                disabled={quantity <= 1}
+                                            >
+                                                -
+                                            </button>
+                                            <input 
+                                                type="number"
+                                                className={styles.quantityInput}
+                                                value={quantity}
+                                                min="1"
+                                                max="10"
+                                                onChange={(e) => handleQuantityChange(parseInt(e.target.value) || 1)}
+                                            />
+                                            <button 
+                                                className={styles.quantityButton}
+                                                onClick={() => handleQuantityChange(quantity + 1)}
+                                                disabled={quantity >= 10}
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.actionButtons}>
+                                        <button 
+                                            className={styles.primaryButton}
+                                            onClick={handleBuyNow}
+                                            disabled={!product.inStock}
+                                        >
+                                            Купить сейчас
+                                        </button>
+                                        <button 
+                                            className={styles.secondaryButton}
+                                            onClick={handleAddToCart}
+                                            disabled={!product.inStock}
+                                        >
+                                            В корзину
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Информация */}
-                        <div>
-                            <h1 style={{ fontSize: '24px', marginBottom: '10px' }}>{product.title}</h1>
-                            <p style={{ color: '#666', marginBottom: '20px' }}>{product.description}</p>
-                            
-                            <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#2c5aa0', marginBottom: '20px' }}>
-                                {product.price.toLocaleString('ru-RU')} ₽
+                        {/* Детальная информация */}
+                        <div className={styles.detailsSection}>
+                            <div className={styles.section}>
+                                <h2 className={styles.sectionTitle}>Описание товара</h2>
+                                <p className={styles.description}>{product.fullDescription}</p>
                             </div>
 
-                            <div style={{ marginBottom: '20px' }}>
-                                <span style={{ 
-                                    color: product.inStock ? 'green' : 'red',
-                                    fontWeight: 'bold'
-                                }}>
-                                    {product.inStock ? '✓ В наличии' : '✗ Нет в наличии'}
-                                </span>
-                            </div>
+                            {product.features && product.features.length > 0 && (
+                                <div className={styles.section}>
+                                    <h2 className={styles.sectionTitle}>Особенности</h2>
+                                    <div className={styles.featuresList}>
+                                        {product.features.map((feature, index) => (
+                                            <div key={index} className={styles.featureItem}>
+                                                <span className={styles.featureIcon}>✓</span>
+                                                <span className={styles.featureText}>{feature}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
-                            {/* Количество */}
-                            <div style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                <span>Количество:</span>
-                                <button 
-                                    onClick={() => handleQuantityChange(quantity - 1)}
-                                    style={{ padding: '5px 10px' }}
-                                >-</button>
-                                <span style={{ padding: '0 10px' }}>{quantity}</span>
-                                <button 
-                                    onClick={() => handleQuantityChange(quantity + 1)}
-                                    style={{ padding: '5px 10px' }}
-                                >+</button>
-                            </div>
-
-                            {/* Кнопки */}
-                            <div style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
-                                <button 
-                                    onClick={handleBuyNow}
-                                    disabled={!product.inStock}
-                                    style={{
-                                        padding: '12px 24px',
-                                        background: '#2c5aa0',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '4px',
-                                        cursor: product.inStock ? 'pointer' : 'not-allowed'
-                                    }}
-                                >
-                                    Купить сейчас
-                                </button>
-                                <button 
-                                    onClick={handleAddToCart}
-                                    disabled={!product.inStock}
-                                    style={{
-                                        padding: '12px 24px',
-                                        background: 'transparent',
-                                        color: '#2c5aa0',
-                                        border: '1px solid #2c5aa0',
-                                        borderRadius: '4px',
-                                        cursor: product.inStock ? 'pointer' : 'not-allowed'
-                                    }}
-                                >
-                                    В корзину
-                                </button>
-                            </div>
-
-                            {/* Гарантия */}
-                            {product.warranty && (
-                                <div style={{ color: '#666' }}>
-                                    <strong>Гарантия:</strong> {product.warranty}
+                            {product.specifications && product.specifications.length > 0 && (
+                                <div className={styles.section}>
+                                    <h2 className={styles.sectionTitle}>Характеристики</h2>
+                                    <div className={styles.specifications}>
+                                        {product.specifications.map((spec, index) => (
+                                            <div key={index} className={styles.specRow}>
+                                                <span className={styles.specName}>{spec.name}</span>
+                                                <span className={styles.specValue}>{spec.value}</span>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
                         </div>
-                    </div>
-
-                    {/* Описание и характеристики */}
-                    <div style={{ marginTop: '40px' }}>
-                        <h2>Описание</h2>
-                        <p>{product.fullDescription}</p>
-
-                        {product.features && product.features.length > 0 && (
-                            <>
-                                <h2>Особенности</h2>
-                                <ul>
-                                    {product.features.map((feature, index) => (
-                                        <li key={index}>✓ {feature}</li>
-                                    ))}
-                                </ul>
-                            </>
-                        )}
-
-                        {product.specifications && product.specifications.length > 0 && (
-                            <>
-                                <h2>Характеристики</h2>
-                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                    <tbody>
-                                        {product.specifications.map((spec, index) => (
-                                            <tr key={index} style={{ borderBottom: '1px solid #eee' }}>
-                                                <td style={{ padding: '8px', fontWeight: 'bold', width: '30%' }}>{spec.name}</td>
-                                                <td style={{ padding: '8px' }}>{spec.value}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </>
-                        )}
                     </div>
                 </div>
             </main>

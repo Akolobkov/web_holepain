@@ -13,7 +13,6 @@ async function addSampleData() {
     try {
         console.log('📝 Adding sample products to database...');
         
-        // Примеры продуктов (без изображений сначала)
         const sampleProducts = [
             {
                 title: "Кухонный гарнитур 'Милена'",
