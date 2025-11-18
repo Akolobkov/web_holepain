@@ -1,33 +1,43 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
 import styles from './Auth.module.css';
 import UserAgreement from "./userAgreement.jsx";
+
 function Auth() {
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('login');
     const [formData, setFormData] = useState({
         email: '',
+        phone: '',
         password: '',
         confirmPassword: '',
         firstName: '',
         lastName: '',
-        rememberMe: false
+        rememberMe: false,
+        agreeToTerms: false
     });
     const [errors, setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showAgreement, setShowAgreement] = useState(false); 
+    const [showAgreement, setShowAgreement] = useState(false);
+    const [authError, setAuthError] = useState('');
+
     const handleTabChange = (tab) => {
         setActiveTab(tab);
         setErrors({});
+        setAuthError('');
         setFormData({
             email: '',
+            phone: '',
             password: '',
             confirmPassword: '',
             firstName: '',
             lastName: '',
-            rememberMe: false
+            rememberMe: false,
+            agreeToTerms: false
         });
     };
 
@@ -45,6 +55,9 @@ function Auth() {
                 [name]: ''
             }));
         }
+        if (authError) {
+            setAuthError('');
+        }
     };
 
     const validateForm = () => {
@@ -54,6 +67,12 @@ function Auth() {
             newErrors.email = 'Email обязателен';
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
             newErrors.email = 'Некорректный email';
+        }
+
+        if (!formData.phone) {
+            newErrors.phone = 'Номер телефона обязателен';
+        } else if (!/^(\+7|8)[\s\-]?\(?[0-9]{3}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$/.test(formData.phone)) {
+            newErrors.phone = 'Некорректный номер телефона';
         }
 
         if (!formData.password) {
@@ -72,16 +91,93 @@ function Auth() {
             } else if (formData.password !== formData.confirmPassword) {
                 newErrors.confirmPassword = 'Пароли не совпадают';
             }
-        }
-        if (!formData.agreeToTerms) {
+
+            if (!formData.agreeToTerms) {
                 newErrors.agreeToTerms = 'Необходимо согласие с пользовательским соглашением';
+            }
         }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleRegister = async (userData) => {
+    try {
+        console.log('📤 Sending registration request:', userData);
+        
+        const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email: userData.email,
+                phone: userData.phone,
+                password: userData.password,
+                firstName: userData.firstName,
+                lastName: userData.lastName
+            }),
+        });
+
+        console.log('📥 Response status:', response.status);
+        
+        // Проверяем, есть ли контент
+        const responseText = await response.text();
+        console.log('📥 Response text:', responseText);
+
+        if (!responseText) {
+            throw new Error('Пустой ответ от сервера');
+        }
+
+        const data = JSON.parse(responseText);
+        console.log('📥 Parsed data:', data);
+
+        if (!response.ok) {
+            throw new Error(data.error || `HTTP error! status: ${response.status}`);
+        }
+
+        return { success: true, user: data.user };
+    } catch (error) {
+        console.error('❌ Registration error:', error);
+        return { success: false, error: error.message };
+    }
+};
+
+const handleLogin = async (email, password) => {
+    try {
+        console.log('📤 Sending login request:', { email });
+        
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password }),
+        });
+
+        console.log('📥 Response status:', response.status);
+        
+        const responseText = await response.text();
+        console.log('📥 Response text:', responseText);
+
+        if (!responseText) {
+            throw new Error('Пустой ответ от сервера');
+        }
+
+        const data = JSON.parse(responseText);
+        console.log('📥 Parsed data:', data);
+
+        if (!response.ok) {
+            throw new Error(data.error || `HTTP error! status: ${response.status}`);
+        }
+
+        return { success: true, user: data.user };
+    } catch (error) {
+        console.error('❌ Login error:', error);
+        return { success: false, error: error.message };
+    }
+};
+    const handleSubmit = async (e) => {
         e.preventDefault();
         
         if (!validateForm()) {
@@ -89,25 +185,51 @@ function Auth() {
         }
 
         setIsSubmitting(true);
-        
-        // Имитация запроса к серверу
-        setTimeout(() => {
-            alert(activeTab === 'login' ? 'Успешный вход!' : 'Регистрация успешна!');
-            setIsSubmitting(false);
-            
-            // Сброс формы после успешной отправки
-            if (activeTab === 'register') {
-                setFormData({
-                    email: '',
-                    password: '',
-                    confirmPassword: '',
-                    firstName: '',
-                    lastName: '',
-                    rememberMe: false
-                });
+        setAuthError('');
+
+        try {
+            let result;
+
+            if (activeTab === 'login') {
+                result = await handleLogin(formData.email, formData.password);
+            } else {
+                result = await handleRegister(formData);
             }
-        }, 1500);
+
+            if (result.success) {
+                // Сохраняем пользователя в localStorage
+                localStorage.setItem('user', JSON.stringify(result.user));
+                
+                // Показываем успешное сообщение
+                alert(activeTab === 'login' ? 'Успешный вход!' : 'Регистрация успешна!');
+                
+                // Перенаправляем на главную страницу
+                navigate('/');
+                
+                // Сброс формы после успешной отправки
+                if (activeTab === 'register') {
+                    setFormData({
+                        email: '',
+                        phone: '',
+                        password: '',
+                        confirmPassword: '',
+                        firstName: '',
+                        lastName: '',
+                        rememberMe: false,
+                        agreeToTerms: false
+                    });
+                }
+            } else {
+                setAuthError(result.error);
+            }
+        } catch (error) {
+            setAuthError('Произошла ошибка при выполнении запроса');
+            console.error('Auth error:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
+
     const handleOpenAgreement = () => {
         setShowAgreement(true);
     };
@@ -123,8 +245,26 @@ function Auth() {
         }));
         setShowAgreement(false);
     };
+
     const handleSocialLogin = (provider) => {
         alert(`Вход через ${provider} (заглушка)`);
+    };
+
+    // Функция для форматирования телефона
+    const formatPhone = (value) => {
+        const numbers = value.replace(/\D/g, '');
+        if (numbers.startsWith('7') || numbers.startsWith('8')) {
+            return '+7 (' + numbers.substring(1, 4) + ') ' + numbers.substring(4, 7) + '-' + numbers.substring(7, 9) + '-' + numbers.substring(9, 11);
+        }
+        return value;
+    };
+
+    const handlePhoneChange = (e) => {
+        const formattedPhone = formatPhone(e.target.value);
+        setFormData(prev => ({
+            ...prev,
+            phone: formattedPhone
+        }));
     };
 
     return (
@@ -153,11 +293,18 @@ function Auth() {
                             {activeTab === 'login' ? 'Вход в аккаунт' : 'Создание аккаунта'}
                         </h2>
 
+                        {/* Общая ошибка авторизации */}
+                        {authError && (
+                            <div className={styles.authError}>
+                                {authError}
+                            </div>
+                        )}
+
                         <form className={styles.form} onSubmit={handleSubmit}>
                             {activeTab === 'register' && (
                                 <>
                                     <div className={styles.formGroup}>
-                                        <label className={styles.label}>Имя</label>
+                                        <label className={styles.label}>Имя *</label>
                                         <input
                                             type="text"
                                             name="firstName"
@@ -184,7 +331,7 @@ function Auth() {
                             )}
 
                             <div className={styles.formGroup}>
-                                <label className={styles.label}>Email</label>
+                                <label className={styles.label}>Email *</label>
                                 <input
                                     type="email"
                                     name="email"
@@ -197,7 +344,20 @@ function Auth() {
                             </div>
 
                             <div className={styles.formGroup}>
-                                <label className={styles.label}>Пароль</label>
+                                <label className={styles.label}>Номер телефона *</label>
+                                <input
+                                    type="tel"
+                                    name="phone"
+                                    value={formData.phone}
+                                    onChange={handlePhoneChange}
+                                    className={`${styles.input} ${errors.phone ? styles.error : ''}`}
+                                    placeholder="+7 (999) 123-45-67"
+                                />
+                                {errors.phone && <span className={styles.errorText}>{errors.phone}</span>}
+                            </div>
+
+                            <div className={styles.formGroup}>
+                                <label className={styles.label}>Пароль *</label>
                                 <div className={styles.passwordInput}>
                                     <input
                                         type={showPassword ? "text" : "password"}
@@ -220,7 +380,7 @@ function Auth() {
 
                             {activeTab === 'register' && (
                                 <div className={styles.formGroup}>
-                                    <label className={styles.label}>Подтверждение пароля</label>
+                                    <label className={styles.label}>Подтверждение пароля *</label>
                                     <div className={styles.passwordInput}>
                                         <input
                                             type={showConfirmPassword ? "text" : "password"}
@@ -259,33 +419,33 @@ function Auth() {
                                     </a>
                                 </div>
                             )}
-                            {activeTab === 'register' && (
-                            <div className={styles.termsGroup}>
-                            <label className={styles.termsLabel}>
-                                <input
-                                type="checkbox"
-                                name="agreeToTerms"
-                                checked={formData.agreeToTerms}
-                                onChange={handleInputChange}
-                                className={`${styles.checkbox} ${errors.agreeToTerms ? styles.error : ''}`}
-                                />
-                                <span>
-                                    Я согласен с {' '}
-                                    <a href="/user-agreement" 
-                                    className={styles.termsLink}
-                                    target="_blank" // открывает в новой вкладке
-                                    rel="noopener noreferrer"
-                                    >
-                                    пользовательским соглашением
-                                    </a>
-                                </span>
-                            </label>
-                            {errors.agreeToTerms && (
-                            <span className={styles.errorText}>{errors.agreeToTerms}</span>
-                            )}
-                            </div>
-                            )}
 
+                            {activeTab === 'register' && (
+                                <div className={styles.termsGroup}>
+                                    <label className={styles.termsLabel}>
+                                        <input
+                                            type="checkbox"
+                                            name="agreeToTerms"
+                                            checked={formData.agreeToTerms}
+                                            onChange={handleInputChange}
+                                            className={`${styles.checkbox} ${errors.agreeToTerms ? styles.error : ''}`}
+                                        />
+                                        <span>
+                                            Я согласен с {' '}
+                                            <button 
+                                                type="button"
+                                                className={styles.termsLink}
+                                                onClick={handleOpenAgreement}
+                                            >
+                                                пользовательским соглашением
+                                            </button>
+                                        </span>
+                                    </label>
+                                    {errors.agreeToTerms && (
+                                        <span className={styles.errorText}>{errors.agreeToTerms}</span>
+                                    )}
+                                </div>
+                            )}
 
                             <button 
                                 type="submit" 
@@ -347,6 +507,14 @@ function Auth() {
             </main>
 
             <Footer />
+
+            {/* Модальное окно пользовательского соглашения */}
+            {showAgreement && (
+                <UserAgreement 
+                    onClose={handleCloseAgreement}
+                    onAgree={handleAgreeToTerms}
+                />
+            )}
         </div>
     );
 }

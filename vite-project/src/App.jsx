@@ -6,6 +6,7 @@ import Auth from './pages/Auth';
 import UserAgreementPage from './pages/userAgreement';
 import Catalog from './pages/Catalog';
 import Details from './pages/Details';
+import Profile from './pages/Profile';
 function App() {
   
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/user-agreement" element={<UserAgreementPage />} />
           <Route path='/catalog' element= {<Catalog/>} />
           <Route path="/product/:id" element={<Details />}/>
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </Router>
   )

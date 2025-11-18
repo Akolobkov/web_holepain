@@ -194,7 +194,6 @@ async function migrateProductDetails() {
             await client.query('DELETE FROM product_details');
         }
 
-        // Вставляем данные
         for (const productDetail of productDetailsData) {
             await client.query(
                 `INSERT INTO product_details (

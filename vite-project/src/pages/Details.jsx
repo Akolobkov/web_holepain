@@ -99,15 +99,71 @@ function Details() {
                     <div className={styles.productDetails}>
                         <div className={styles.mainSection}>
                             {/* Галерея изображений */}
+
                             <div className={styles.gallery}>
-                                <div className={styles.mainImage}>
-                                    <img 
-                                        src={product.image || 'https://via.placeholder.com/600x400?text=Нет+изображения'} 
-                                        alt={product.title}
-                                        className={styles.productImage}
-                                    />
-                                </div>
-                            </div>
+                                <div className={styles.sliderWithPreview}>
+                                {/* Основной слайдер */}
+                                <div className={styles.mainSlider}>
+                                <div 
+                                className={styles.slides}
+                                style={{ transform: `translateX(-${selectedImage * 100}%)` }}
+                >
+                {product.images.map((image, index) => (
+                    <div key={image.id || index} className={styles.slide}>
+                        <img 
+                            src={image.url} 
+                            alt={`${product.title} ${index + 1}`}
+                            className={styles.productImage}
+                        />
+                    </div>
+                ))}
+            </div>
+            
+            {/* Кнопки навигации */}
+            {product.images.length > 1 && (
+                <>
+                    <button 
+                        className={styles.navButton}
+                        onClick={() => setSelectedImage(prev => 
+                            prev === 0 ? product.images.length - 1 : prev - 1
+                        )}
+                    >
+                        ←
+                    </button>
+                    <button 
+                        className={styles.navButton}
+                        onClick={() => setSelectedImage(prev => 
+                            prev === product.images.length - 1 ? 0 : prev + 1
+                        )}
+                    >
+                        →
+                    </button>
+                </>
+            )}
+        </div>
+        
+        {/* Превью миниатюры */}
+        {product.images.length > 1 && (
+            <div className={styles.previewStrip}>
+                {product.images.map((image, index) => (
+                    <div
+                        key={image.id || index}
+                        className={`${styles.previewItem} ${
+                            selectedImage === index ? styles.active : ''
+                        }`}
+                        onClick={() => setSelectedImage(index)}
+                    >
+                        <img 
+                            src={image.url} 
+                            alt={`Превью ${index + 1}`}
+                            className={styles.previewImage}
+                        />
+                    </div>
+                ))}
+            </div>
+        )}
+    </div>
+</div>
 
                             {/* Информация о товаре */}
                             <div className={styles.productInfo}>
