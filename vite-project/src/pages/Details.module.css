@@ -341,7 +341,13 @@
   cursor: not-allowed;
   transform: none;
 }
-
+.specRow{
+  font-size: 1.2 rem;
+  font-weight: 500;
+  color: #2d3748;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+}
 /* Детальная информация */
 .detailsSection {
   padding: 40px;
@@ -449,93 +455,6 @@
   font-size: 1.8rem;
   color: #2d3748;
   margin-bottom: 20px;
-}
-
-/* Адаптивность */
-@media (max-width: 768px) {
-  .main {
-    padding: 20px 15px;
-  }
-  
-  .mainImage {
-    height: 300px;
-  }
-  
-  .productTitle {
-    font-size: 1.5rem;
-  }
-  
-  .currentPrice {
-    font-size: 1.6rem;
-  }
-  
-  .actionButtons {
-    flex-direction: column;
-  }
-  
-  .quantitySelector {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-  
-  .quantityLabel {
-    min-width: auto;
-  }
-  
-  .detailsSection {
-    padding: 20px;
-  }
-  
-  .sectionTitle {
-    font-size: 1.3rem;
-  }
-  
-  .description {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .mainSection {
-    padding: 16px;
-  }
-  
-  .gallery {
-    gap: 12px;
-  }
-  
-  .mainImage {
-    height: 250px;
-  }
-  
-  .thumbnail {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .featuresList {
-    grid-template-columns: 1fr;
-  }
-  
-  .specifications td {
-    padding: 12px 16px;
-    font-size: 0.9rem;
-  }
-  
-  .specifications td:first-child {
-    width: 40%;
-  }
-  
-  .actionButtons {
-    gap: 8px;
-  }
-  
-  .primaryButton,
-  .secondaryButton {
-    padding: 14px 20px;
-    font-size: 1rem;
-  }
 }
 
 /* Плейсхолдер для изображений */

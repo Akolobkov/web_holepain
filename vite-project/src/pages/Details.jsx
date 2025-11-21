@@ -11,27 +11,40 @@ function Details() {
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
 
-    const handleAddToCart = () => {
-        if (!product) return;
-        
-        const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
-        const existingItem = cartItems.find(item => item.id === product.id);
-        
-        if (existingItem) {
-            existingItem.quantity += quantity;
-        } else {
-            cartItems.push({
-                id: product.id,
-                title: product.title,
-                price: product.price,
-                image: product.image,
+    const handleAddToCart = async () => {
+    if (!product) return;
+    
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (!user) {
+        alert('Пожалуйста, войдите в систему чтобы добавить товар в корзину');
+        navigate('/login');
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:300/api/cart/${user.id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                productId: product.id,
                 quantity: quantity
-            });
-        }
+            }),
+        });
+
+        const data = await response.json();
         
-        localStorage.setItem('cart', JSON.stringify(cartItems));
-        alert(`Товар "${product.title}" (${quantity} шт.) добавлен в корзину!`);
-    };
+        if (data.success) {
+            alert(`Товар "${product.title}" добавлен в корзину!`);
+        } else {
+            alert('Ошибка при добавлении в корзину: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        alert('Ошибка при добавлении в корзину');
+    }
+};
 
     const handleBuyNow = () => {
         handleAddToCart();
@@ -222,13 +235,6 @@ function Details() {
 
                                     <div className={styles.actionButtons}>
                                         <button 
-                                            className={styles.primaryButton}
-                                            onClick={handleBuyNow}
-                                            disabled={!product.inStock}
-                                        >
-                                            Купить сейчас
-                                        </button>
-                                        <button 
                                             className={styles.secondaryButton}
                                             onClick={handleAddToCart}
                                             disabled={!product.inStock}
@@ -268,6 +274,7 @@ function Details() {
                                         {product.specifications.map((spec, index) => (
                                             <div key={index} className={styles.specRow}>
                                                 <span className={styles.specName}>{spec.name}</span>
+                                                {' '}
                                                 <span className={styles.specValue}>{spec.value}</span>
                                             </div>
                                         ))}

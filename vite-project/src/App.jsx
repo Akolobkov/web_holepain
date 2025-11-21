@@ -19,7 +19,8 @@ function App() {
           <Route path="/user-agreement" element={<UserAgreementPage />} />
           <Route path='/catalog' element= {<Catalog/>} />
           <Route path="/product/:id" element={<Details />}/>
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/userAgreement" element={<UserAgreementPage />} />
         </Routes>
       </Router>
   )

@@ -48,16 +48,10 @@ function Auth() {
             [name]: type === 'checkbox' ? checked : value
         }));
         
-        // Clear error when user starts typing
         if (errors[name]) {
-            setErrors(prev => ({
-                ...prev,
-                [name]: ''
-            }));
+            setErrors(prev => ({ ...prev, [name]: '' }));
         }
-        if (authError) {
-            setAuthError('');
-        }
+        if (authError) setAuthError('');
     };
 
     const validateForm = () => {
@@ -85,13 +79,11 @@ function Auth() {
             if (!formData.firstName) {
                 newErrors.firstName = 'Имя обязательно';
             }
-
             if (!formData.confirmPassword) {
                 newErrors.confirmPassword = 'Подтверждение пароля обязательно';
             } else if (formData.password !== formData.confirmPassword) {
                 newErrors.confirmPassword = 'Пароли не совпадают';
             }
-
             if (!formData.agreeToTerms) {
                 newErrors.agreeToTerms = 'Необходимо согласие с пользовательским соглашением';
             }
@@ -102,169 +94,103 @@ function Auth() {
     };
 
     const handleRegister = async (userData) => {
-    try {
-        console.log('📤 Sending registration request:', userData);
-        
-        const response = await fetch('/api/auth/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                email: userData.email,
-                phone: userData.phone,
-                password: userData.password,
-                firstName: userData.firstName,
-                lastName: userData.lastName
-            }),
-        });
-
-        console.log('📥 Response status:', response.status);
-        
-        // Проверяем, есть ли контент
-        const responseText = await response.text();
-        console.log('📥 Response text:', responseText);
-
-        if (!responseText) {
-            throw new Error('Пустой ответ от сервера');
-        }
-
-        const data = JSON.parse(responseText);
-        console.log('📥 Parsed data:', data);
-
-        if (!response.ok) {
-            throw new Error(data.error || `HTTP error! status: ${response.status}`);
-        }
-
-        return { success: true, user: data.user };
-    } catch (error) {
-        console.error('❌ Registration error:', error);
-        return { success: false, error: error.message };
-    }
-};
-
-const handleLogin = async (email, password) => {
-    try {
-        console.log('📤 Sending login request:', { email });
-        
-        const response = await fetch('/api/auth/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, password }),
-        });
-
-        console.log('📥 Response status:', response.status);
-        
-        const responseText = await response.text();
-        console.log('📥 Response text:', responseText);
-
-        if (!responseText) {
-            throw new Error('Пустой ответ от сервера');
-        }
-
-        const data = JSON.parse(responseText);
-        console.log('📥 Parsed data:', data);
-
-        if (!response.ok) {
-            throw new Error(data.error || `HTTP error! status: ${response.status}`);
-        }
-
-        return { success: true, user: data.user };
-    } catch (error) {
-        console.error('❌ Login error:', error);
-        return { success: false, error: error.message };
-    }
-};
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        
-        if (!validateForm()) {
-            return;
-        }
-
-        setIsSubmitting(true);
-        setAuthError('');
-
         try {
-            let result;
+            const response = await fetch('http://localhost:300/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: userData.email,
+                    phone: userData.phone,
+                    password: userData.password,
+                    firstName: userData.firstName,
+                    lastName: userData.lastName
+                }),
+            });
 
-            if (activeTab === 'login') {
-                result = await handleLogin(formData.email, formData.password);
-            } else {
-                result = await handleRegister(formData);
+            const data = await response.json();
+            console.log('Registration response:', data);
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Ошибка регистрации');
             }
 
-            if (result.success) {
-                // Сохраняем пользователя в localStorage
-                localStorage.setItem('user', JSON.stringify(result.user));
-                
-                // Показываем успешное сообщение
-                alert(activeTab === 'login' ? 'Успешный вход!' : 'Регистрация успешна!');
-                
-                // Перенаправляем на главную страницу
-                navigate('/');
-                
-                // Сброс формы после успешной отправки
-                if (activeTab === 'register') {
-                    setFormData({
-                        email: '',
-                        phone: '',
-                        password: '',
-                        confirmPassword: '',
-                        firstName: '',
-                        lastName: '',
-                        rememberMe: false,
-                        agreeToTerms: false
-                    });
-                }
-            } else {
-                setAuthError(result.error);
-            }
+            return { success: true, user: data.user };
         } catch (error) {
-            setAuthError('Произошла ошибка при выполнении запроса');
-            console.error('Auth error:', error);
-        } finally {
-            setIsSubmitting(false);
+            console.error('Registration error:', error);
+            return { success: false, error: error.message };
         }
     };
 
-    const handleOpenAgreement = () => {
-        setShowAgreement(true);
-    };
+    const handleLogin = async (email, password) => {
+        try {
+            const response = await fetch('http://localhost:300/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            });
 
-    const handleCloseAgreement = () => {
-        setShowAgreement(false);
-    };
+            const data = await response.json();
+            console.log('Login response:', data);
 
-    const handleAgreeToTerms = () => {
-        setFormData(prev => ({
-            ...prev,
-            agreeToTerms: true
-        }));
-        setShowAgreement(false);
-    };
+            if (!response.ok) {
+                throw new Error(data.error || 'Ошибка входа');
+            }
 
-    const handleSocialLogin = (provider) => {
-        alert(`Вход через ${provider} (заглушка)`);
-    };
-
-    // Функция для форматирования телефона
-    const formatPhone = (value) => {
-        const numbers = value.replace(/\D/g, '');
-        if (numbers.startsWith('7') || numbers.startsWith('8')) {
-            return '+7 (' + numbers.substring(1, 4) + ') ' + numbers.substring(4, 7) + '-' + numbers.substring(7, 9) + '-' + numbers.substring(9, 11);
+            return { success: true, user: data.user };
+        } catch (error) {
+            console.error('Login error:', error);
+            return { success: false, error: error.message };
         }
-        return value;
+    };
+
+    const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+    setAuthError('');
+
+    try {
+        let result;
+        if (activeTab === 'login') {
+            result = await handleLogin(formData.email, formData.password);
+        } else {
+            result = await handleRegister(formData);
+        }
+
+        if (result.success) {
+            // Сохраняем пользователя
+            localStorage.setItem('user', JSON.stringify(result.user));
+            localStorage.setItem('isLoggedIn', 'true');
+            
+            console.log('✅ Auth successful, user saved:', result.user);
+            
+            // Показываем сообщение и редирект
+            alert(activeTab === 'login' ? 'Успешный вход!' : 'Регистрация успешна!');
+            
+            // Редирект на профиль или главную
+            navigate(`/profile/${result.user.id}`);
+        } else {
+            setAuthError(result.error);
+        }
+    } catch (error) {
+        setAuthError('Ошибка сети. Проверьте подключение к серверу.');
+    } finally {
+        setIsSubmitting(false);
+    }
     };
 
     const handlePhoneChange = (e) => {
-        const formattedPhone = formatPhone(e.target.value);
-        setFormData(prev => ({
-            ...prev,
-            phone: formattedPhone
-        }));
+        const value = e.target.value.replace(/\D/g, '');
+        let formattedValue = value;
+        
+        if (value.startsWith('7') || value.startsWith('8')) {
+            formattedValue = '+7 (' + value.substring(1, 4) + ') ' + value.substring(4, 7) + '-' + value.substring(7, 9) + '-' + value.substring(9, 11);
+        }
+        
+        setFormData(prev => ({ ...prev, phone: formattedValue }));
+        if (errors.phone) setErrors(prev => ({ ...prev, phone: '' }));
     };
 
     return (
@@ -293,12 +219,7 @@ const handleLogin = async (email, password) => {
                             {activeTab === 'login' ? 'Вход в аккаунт' : 'Создание аккаунта'}
                         </h2>
 
-                        {/* Общая ошибка авторизации */}
-                        {authError && (
-                            <div className={styles.authError}>
-                                {authError}
-                            </div>
-                        )}
+                        {authError && <div className={styles.authError}>{authError}</div>}
 
                         <form className={styles.form} onSubmit={handleSubmit}>
                             {activeTab === 'register' && (
@@ -344,7 +265,7 @@ const handleLogin = async (email, password) => {
                             </div>
 
                             <div className={styles.formGroup}>
-                                <label className={styles.label}>Номер телефона *</label>
+                                <label className={styles.label}>Телефон *</label>
                                 <input
                                     type="tel"
                                     name="phone"
@@ -414,9 +335,7 @@ const handleLogin = async (email, password) => {
                                         />
                                         Запомнить меня
                                     </label>
-                                    <a href="#forgot" className={styles.forgotLink}>
-                                        Забыли пароль?
-                                    </a>
+                                    <a href="#forgot" className={styles.forgotLink}>Забыли пароль?</a>
                                 </div>
                             )}
 
@@ -430,76 +349,29 @@ const handleLogin = async (email, password) => {
                                             onChange={handleInputChange}
                                             className={`${styles.checkbox} ${errors.agreeToTerms ? styles.error : ''}`}
                                         />
-                                        <span>
-                                            Я согласен с {' '}
-                                            <button 
-                                                type="button"
-                                                className={styles.termsLink}
-                                                onClick={handleOpenAgreement}
-                                            >
-                                                пользовательским соглашением
-                                            </button>
-                                        </span>
+                                        <span>Я согласен с <button type="button" className={styles.termsLink} onClick={() => window.open('/userAgreement', '_blank')}>пользовательским соглашением</button></span>
                                     </label>
-                                    {errors.agreeToTerms && (
-                                        <span className={styles.errorText}>{errors.agreeToTerms}</span>
-                                    )}
+                                    {errors.agreeToTerms && <span className={styles.errorText}>{errors.agreeToTerms}</span>}
                                 </div>
                             )}
 
-                            <button 
-                                type="submit" 
-                                className={styles.submitButton}
-                                disabled={isSubmitting}
-                            >
+                            <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
                                 {isSubmitting ? 'Загрузка...' : (activeTab === 'login' ? 'Войти' : 'Зарегистрироваться')}
                             </button>
                         </form>
 
-                        <div className={styles.divider}>
-                            <span>или</span>
-                        </div>
+                        <div className={styles.divider}><span>или</span></div>
 
                         <div className={styles.socialButtons}>
-                            <button 
-                                className={`${styles.socialButton} ${styles.google}`}
-                                onClick={() => handleSocialLogin('Yandex')}
-                                type="button"
-                            >
-                                Яндекс
-                            </button>
-                            <button 
-                                className={`${styles.socialButton} ${styles.facebook}`}
-                                onClick={() => handleSocialLogin('Max_idi_nahui')}
-                                type="button"
-                            >
-                                Мессенджер Макс
-                            </button>
+                            <button className={`${styles.socialButton} ${styles.google}`} onClick={() => alert('Яндекс (заглушка)')}>Яндекс</button>
+                            <button className={`${styles.socialButton} ${styles.facebook}`} onClick={() => alert('Мессенджер Макс (заглушка)')}>Мессенджер Макс</button>
                         </div>
 
                         <div className={styles.bottomText}>
                             {activeTab === 'login' ? (
-                                <>
-                                    Нет аккаунта? 
-                                    <button 
-                                        className={styles.link}
-                                        onClick={() => handleTabChange('register')}
-                                        type="button"
-                                    >
-                                        Зарегистрироваться
-                                    </button>
-                                </>
+                                <>Нет аккаунта? <button className={styles.link} onClick={() => handleTabChange('register')}>Зарегистрироваться</button></>
                             ) : (
-                                <>
-                                    Уже есть аккаунт? 
-                                    <button 
-                                        className={styles.link}
-                                        onClick={() => handleTabChange('login')}
-                                        type="button"
-                                    >
-                                        Войти
-                                    </button>
-                                </>
+                                <>Уже есть аккаунт? <button className={styles.link} onClick={() => handleTabChange('login')}>Войти</button></>
                             )}
                         </div>
                     </div>
@@ -507,14 +379,7 @@ const handleLogin = async (email, password) => {
             </main>
 
             <Footer />
-
-            {/* Модальное окно пользовательского соглашения */}
-            {showAgreement && (
-                <UserAgreement 
-                    onClose={handleCloseAgreement}
-                    onAgree={handleAgreeToTerms}
-                />
-            )}
+            {showAgreement && <UserAgreement onClose={() => setShowAgreement(false)} onAgree={() => { setFormData(prev => ({...prev, agreeToTerms: true})); setShowAgreement(false); }} />}
         </div>
     );
 }
