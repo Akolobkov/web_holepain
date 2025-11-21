@@ -1,8 +1,12 @@
 footer{
-    height: 70px;
+    height: 75px;
     color: black;
     background-color: peachpuff;
-
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
 
 h4{
@@ -14,14 +18,16 @@ h4{
 .img1{
     height: 0.1px;
 }
+
 .downloadButton {
-    align-self: start;
     background: #2c5aa0;
     color: white;
     border: none;
     cursor: pointer;
     font-size: 10px;
     transition: background 0.2s ease;
+    padding: 8px 16px;
+    border-radius: 4px;
 }
 
 .downloadButton:hover {
