@@ -11,9 +11,8 @@ const pool = new Pool({
     password: 'postgres',
 });
 
-// Маппинг product_id -> пути к изображениям
 const productImagesMap = {
-    1: ['Kuhgar.webp', 'MaoMao.png'],
+    1: ['Kuhgar.webp', 'milena2.webp', 'milena3.webp'],
     2: ['Modkuh.webp'],
     3: ['kuhmod.webp'],
     4: ['stol.jpg'],
@@ -29,7 +28,6 @@ async function migrateImages() {
         console.log('🖼️ Starting images migration...');
         await client.query('BEGIN');
 
-        // Очищаем существующие изображения
         await client.query('DELETE FROM product_images');
 
         for (const [productId, imageNames] of Object.entries(productImagesMap)) {
@@ -52,7 +50,7 @@ async function migrateImages() {
                             imageBuffer,
                             mimeType,
                             imageName,
-                            i === 0, // первое изображение - основное
+                            i === 0, 
                             i
                         ]
                     );

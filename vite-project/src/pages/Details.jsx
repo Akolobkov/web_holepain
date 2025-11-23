@@ -55,7 +55,17 @@ function Details() {
         const newQuantity = Math.max(1, Math.min(10, value));
         setQuantity(newQuantity);
     };
+    const nextImage = () => {
+        setSelectedImage(prev => 
+            prev === product.images.length - 1 ? 0 : prev + 1
+        );
+    };
 
+    const prevImage = () => {
+        setSelectedImage(prev => 
+            prev === 0 ? product.images.length - 1 : prev - 1
+        );
+    };
     if (loading) {
         return (
             <div className={styles.container}>
@@ -134,26 +144,24 @@ function Details() {
             
             {/* Кнопки навигации */}
             {product.images.length > 1 && (
-                <>
-                    <button 
-                        className={styles.navButton}
-                        onClick={() => setSelectedImage(prev => 
-                            prev === 0 ? product.images.length - 1 : prev - 1
-                        )}
-                    >
-                        ←
-                    </button>
-                    <button 
-                        className={styles.navButton}
-                        onClick={() => setSelectedImage(prev => 
-                            prev === product.images.length - 1 ? 0 : prev + 1
-                        )}
-                    >
-                        →
-                    </button>
-                </>
-            )}
-        </div>
+                                            <>
+                                                <button 
+                                                    className={`${styles.navButton} ${styles.prevButton}`}
+                                                    onClick={prevImage}
+                                                    aria-label="Предыдущее изображение"
+                                                >
+                                                    ‹
+                                                </button>
+                                                <button 
+                                                    className={`${styles.navButton} ${styles.nextButton}`}
+                                                    onClick={nextImage}
+                                                    aria-label="Следующее изображение"
+                                                >
+                                                    ›
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
         
         {/* Превью миниатюры */}
         {product.images.length > 1 && (
