@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useLayoutEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Header from "../components/Header.jsx";
 import Footer from "../components/Footer.jsx";
@@ -10,7 +11,9 @@ function Details() {
     const { product, loading, error } = useProductDetails(id);
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
-
+    useLayoutEffect(() => {
+        window.scrollTo(0, 0);
+    }, [id]);
     const handleAddToCart = async () => {
     if (!product) return;
     

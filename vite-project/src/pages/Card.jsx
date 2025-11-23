@@ -70,7 +70,7 @@ function Card({ product, onDetailsClick, onAddToCart }) {
     };
 
     const showAddToCartNotification = () => {
-        // Создаем временное уведомление
+        
         const notification = document.createElement('div');
         notification.className = styles.addNotification;
         notification.textContent = 'Товар добавлен в корзину!';
@@ -90,7 +90,6 @@ function Card({ product, onDetailsClick, onAddToCart }) {
         
         document.body.appendChild(notification);
         
-        // Удаляем уведомление через 3 секунды
         setTimeout(() => {
             if (notification.parentNode) {
                 notification.parentNode.removeChild(notification);
@@ -98,7 +97,6 @@ function Card({ product, onDetailsClick, onAddToCart }) {
         }, 3000);
     };
 
-    // Функция для быстрой покупки (добавление и переход в корзину)
     const handleBuyNow = async (e) => {
         e.stopPropagation();
         
